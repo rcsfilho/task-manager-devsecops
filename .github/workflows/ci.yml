@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -8,10 +8,12 @@ on:
       - staging
 
 jobs:
+
   build:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout do codigo
         uses: actions/checkout@v4
 
@@ -45,7 +47,38 @@ jobs:
           pip install bandit
           bandit -r todo_project -ll || true
 
-      - name: Analise de dependencias com pip-audit
+      - name: Analise de dependencias
         run: |
           pip install pip-audit
           pip-audit -r requirements.txt || true
+
+  deploy-stage:
+
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout do codigo
+        uses: actions/checkout@v4
+
+      - name: Simulando deploy em Stage
+        run: |
+          echo "Aplicacao implantada em ambiente Stage"
+
+  dast:
+
+    needs: deploy-stage
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout do codigo
+        uses: actions/checkout@v4
+
+      - name: Executando DAST com OWASP ZAP
+        run: |
+          docker run --rm ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+                    -t https://example.com || true
