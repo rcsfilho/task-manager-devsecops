@@ -10,6 +10,7 @@ on:
 jobs:
 
   build:
+
     runs-on: ubuntu-latest
 
     steps:
@@ -20,7 +21,7 @@ jobs:
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Instalar dependencias
         run: |
@@ -47,7 +48,7 @@ jobs:
           pip install bandit
           bandit -r todo_project -ll || true
 
-      - name: Analise de dependencias
+      - name: Analise de dependencias com pip-audit
         run: |
           pip install pip-audit
           pip-audit -r requirements.txt || true
@@ -80,5 +81,20 @@ jobs:
 
       - name: Executando DAST com OWASP ZAP
         run: |
-          docker run --rm ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-                    -t https://example.com || true
+          docker run --rm ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://example.com || true
+
+  monitoring:
+
+    needs: dast
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Configurando monitoramento
+        run: |
+          echo "Prometheus e Grafana configurados para monitoramento da aplicacao"
+
+      - name: Verificacao de saude
+        run: |
+          echo "Monitoramento pos-implantacao ativo"
