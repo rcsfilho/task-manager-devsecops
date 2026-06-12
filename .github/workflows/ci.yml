@@ -39,3 +39,12 @@ jobs:
       - name: Teste Funcional
         run: |
           echo "Executando testes funcionais"
+      - name: SAST com Bandit
+        run: |
+          pip install bandit
+          bandit -r todo_project -ll
+
+      - name: Analise de dependencias com pip-audit
+        run: |
+          pip install pip-audit
+          pip-audit -r requirements.txt
